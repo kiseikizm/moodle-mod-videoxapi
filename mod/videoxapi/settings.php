@@ -101,11 +101,11 @@ if ($ADMIN->fulltree) {
         PARAM_INT
     ));
 
-    // Test connection button.
-    $testurl = new moodle_url('/mod/videoxapi/admin/test_connection.php');
-    $settings->add(new admin_setting_description('videoxapi_test_connection',
+    // Test connection page.
+    $ADMIN->add('modsettingvideoxapi', new admin_externalpage(
+        'mod_videoxapi_testconnection',
         get_string('testconnection', 'videoxapi'),
-        html_writer::link($testurl, get_string('testconnectionbutton', 'videoxapi'), 
-            ['class' => 'btn btn-secondary'])
+        new moodle_url('/mod/videoxapi/admin/test_connection.php'),
+        'moodle/site:config'
     ));
 }

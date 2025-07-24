@@ -110,10 +110,17 @@ $string['every30minutes'] = 'Every 30 minutes';
 $string['every1hour'] = 'Every hour';
 
 // Test connection.
-$string['testconnection'] = 'Test LRS connection';
+$string['testconnection'] = 'Test LRS Connection';
 $string['testconnectionbutton'] = 'Test Connection';
-$string['connectionsuccessful'] = 'Connection to LRS successful';
-$string['connectionfailed'] = 'Connection to LRS failed: {$a}';// Additional UI strings.
+$string['lrsnotconfigured'] = 'LRS endpoint is not configured';
+$string['connectionerror'] = 'Connection error';
+$string['connectionsuccess'] = 'Connection successful! LRS is responding correctly.';
+$string['connectionfailed'] = 'Connection failed';
+$string['connectionexception'] = 'Exception while connecting';
+$string['connectiondetails'] = 'Connection Details';
+$string['notset'] = 'Not set';
+$string['backtosettings'] = 'Back to Settings';
+$string['configurelrs'] = 'Configure LRS';// Additional UI strings.
 $string['novideo'] = 'No video configured for this activity.';
 $string['bookmarks'] = 'Bookmarks';
 $string['reports'] = 'Reports';
