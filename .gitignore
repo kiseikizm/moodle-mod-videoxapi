@@ -1,0 +1,30 @@
+# Moodle specific
+config.php
+/config.php
+
+# IDE files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Temporary files
+*.tmp
+*.temp
+
+# Node modules (if any)
+node_modules/
+
+# Kiro files
+.kiro/
+
+# Backup files
+*.bak
+*~

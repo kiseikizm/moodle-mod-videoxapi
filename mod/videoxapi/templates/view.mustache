@@ -1,0 +1,92 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template mod_videoxapi/view
+
+    Main view template for videoxapi activity
+
+    Context variables required for this template:
+    * videoxapi - The videoxapi instance
+    * cm - Course module
+    * course - Course object
+    * playerid - Video player element ID
+    * cancreatebookmarks - User can create bookmarks
+    * canviewallbookmarks - User can view all bookmarks
+    * canviewreports - User can view reports
+
+    Example context (json):
+    {
+        "videoxapi": {
+            "id": 1,
+            "name": "Sample Video",
+            "video_url": "https://example.com/video.mp4",
+            "video_width": 640,
+            "video_height": 360,
+            "enable_bookmarks": 1
+        },
+        "playerid": "videoxapi-player-1",
+        "cancreatebookmarks": true,
+        "canviewallbookmarks": false,
+        "canviewreports": false
+    }
+}}
+
+<div class="videoxapi-container">
+    <div class="videoxapi-player-wrapper">
+        {{#videoxapi.video_url}}
+        <video
+            id="{{playerid}}"
+            class="video-js vjs-default-skin videoxapi-player"
+            controls
+            preload="auto"
+            {{#videoxapi.video_width}}width="{{videoxapi.video_width}}"{{/videoxapi.video_width}}
+            {{#videoxapi.video_height}}height="{{videoxapi.video_height}}"{{/videoxapi.video_height}}
+            data-setup="{}"
+        >
+            <source src="{{videoxapi.video_url}}" type="video/mp4" />
+            <p class="vjs-no-js">
+                To view this video please enable JavaScript, and consider upgrading to a web browser that
+                <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>.
+            </p>
+        </video>
+        {{/videoxapi.video_url}}
+        
+        {{^videoxapi.video_url}}
+        <div class="alert alert-warning">
+            {{#str}}novideo, mod_videoxapi{{/str}}
+        </div>
+        {{/videoxapi.video_url}}
+    </div>
+
+    {{#videoxapi.enable_bookmarks}}
+    <div class="videoxapi-bookmarks-section">
+        <h3>{{#str}}bookmarks, mod_videoxapi{{/str}}</h3>
+        <div id="videoxapi-bookmarks-{{videoxapi.id}}" class="videoxapi-bookmarks-list">
+            <!-- Bookmarks will be loaded here via JavaScript -->
+        </div>
+    </div>
+    {{/videoxapi.enable_bookmarks}}
+
+    {{#canviewreports}}
+    <div class="videoxapi-reports-section">
+        <h3>{{#str}}reports, mod_videoxapi{{/str}}</h3>
+        <a href="report.php?id={{cm.id}}" class="btn btn-secondary">
+            {{#str}}viewreports, mod_videoxapi{{/str}}
+        </a>
+    </div>
+    {{/canviewreports}}
+</div>

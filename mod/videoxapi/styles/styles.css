@@ -1,0 +1,124 @@
+/* Video xAPI Plugin Styles */
+
+.videoxapi-container {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.videoxapi-player-wrapper {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.videoxapi-player {
+    width: 100%;
+    height: auto;
+}
+
+.videoxapi-player.vjs-fluid {
+    padding-top: 56.25%; /* 16:9 aspect ratio */
+}
+
+/* Bookmark markers on timeline */
+.vjs-bookmark-marker {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background-color: #ff6b35;
+    cursor: pointer;
+    z-index: 1;
+    border-radius: 1px;
+}
+
+.vjs-bookmark-marker:hover {
+    background-color: #ff4500;
+    width: 4px;
+}
+
+/* Bookmark button */
+.vjs-bookmark-button {
+    background: none;
+    border: none;
+    color: white;
+    cursor: pointer;
+    font-size: 14px;
+    padding: 0 8px;
+}
+
+.vjs-bookmark-button:hover {
+    color: #ff6b35;
+}
+
+/* Bookmarks section */
+.videoxapi-bookmarks-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+.videoxapi-bookmarks-list {
+    margin-top: 15px;
+}
+
+.bookmark-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.bookmark-item:hover {
+    background-color: #e9ecef;
+}
+
+.bookmark-time {
+    font-weight: bold;
+    color: #007bff;
+    margin-right: 15px;
+    min-width: 60px;
+}
+
+.bookmark-content {
+    flex: 1;
+}
+
+.bookmark-title {
+    font-weight: 600;
+    margin-bottom: 5px;
+}
+
+.bookmark-description {
+    color: #6c757d;
+    font-size: 0.9em;
+}
+
+/* Reports section */
+.videoxapi-reports-section {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+    .videoxapi-container {
+        padding: 0 10px;
+    }
+    
+    .bookmark-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .bookmark-time {
+        margin-bottom: 10px;
+    }
+}
