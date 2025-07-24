@@ -9,8 +9,22 @@
 
 defined('MOODLE_INTERNAL') || die();
 
-if ($ADMIN->fulltree) {
+if ($hassiteconfig) {
     require_once($CFG->dirroot . '/mod/videoxapi/lib/xapi/ConfigManager.php');
+
+    // 1) Önce 'Activity modules' altına kendi kategori başlığımızı ekleyelim
+    $ADMIN->add('modsettings',
+        new admin_category(
+            'mod_videoxapi',                     // benzersiz kategori adı
+            get_string('pluginname', 'videoxapi') // eklenti adı
+        )
+    );
+
+    // 2) Kendi ayar sayfamızı bu kategori altına ekleyelim
+    $settings = new admin_settingpage(
+        'modsetting_videoxapi',                // benzersiz ayar sayfası anahtarı
+        get_string('settings', 'videoxapi')     // Ayar sayfası başlığı
+    );
 
     // xAPI Configuration section.
     $settings->add(new admin_setting_heading('videoxapi_xapi_heading',
@@ -23,9 +37,7 @@ if ($ADMIN->fulltree) {
         get_string('xapienabled', 'videoxapi'),
         get_string('xapienabled_desc', 'videoxapi'),
         0
-    ));
-
-    // LRS endpoint URL.
+    ));    // LRS endpoint URL.
     $settings->add(new admin_setting_configtext('mod_videoxapi/lrs_endpoint',
         get_string('lrsendpoint', 'videoxapi'),
         get_string('lrsendpoint_desc', 'videoxapi'),
@@ -45,7 +57,9 @@ if ($ADMIN->fulltree) {
         get_string('lrspassword', 'videoxapi'),
         get_string('lrspassword_desc', 'videoxapi'),
         ''
-    ));    // LRS authentication method.
+    ));
+
+    // LRS authentication method.
     $authmethods = [
         'basic' => get_string('authbasic', 'videoxapi'),
         'oauth' => get_string('authoauth', 'videoxapi')
@@ -61,9 +75,7 @@ if ($ADMIN->fulltree) {
     $settings->add(new admin_setting_heading('videoxapi_queue_heading',
         get_string('queueconfig', 'videoxapi'),
         get_string('queueconfig_desc', 'videoxapi')
-    ));
-
-    // Enable queue processing.
+    ));    // Enable queue processing.
     $settings->add(new admin_setting_configcheckbox('mod_videoxapi/queue_enabled',
         get_string('queueenabled', 'videoxapi'),
         get_string('queueenabled_desc', 'videoxapi'),
@@ -99,10 +111,21 @@ if ($ADMIN->fulltree) {
         get_string('connectiontimeout_desc', 'videoxapi'),
         30,
         PARAM_INT
+    ));    // Test connection link.
+    $settings->add(new admin_setting_heading('videoxapi_testlink',
+        get_string('testconnection', 'videoxapi'),
+        html_writer::link(
+            new moodle_url('/mod/videoxapi/admin/test_connection.php'),
+            get_string('testconnectionbutton', 'videoxapi'),
+            ['class' => 'btn btn-secondary']
+        )
     ));
 
-    // Test connection page.
-    $ADMIN->add('modsettingvideoxapi', new admin_externalpage(
+    // Ayar sayfasını kategoriye ekle
+    $ADMIN->add('mod_videoxapi', $settings);
+
+    // Test connection external page'i de ekleyelim
+    $ADMIN->add('mod_videoxapi', new admin_externalpage(
         'mod_videoxapi_testconnection',
         get_string('testconnection', 'videoxapi'),
         new moodle_url('/mod/videoxapi/admin/test_connection.php'),

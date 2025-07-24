@@ -13,6 +13,7 @@ $string['modulename'] = 'Video xAPI';
 $string['modulenameplural'] = 'Video xAPI activities';
 $string['pluginname'] = 'Video xAPI';
 $string['pluginadministration'] = 'Video xAPI administration';
+$string['settings'] = 'Video xAPI Settings';
 $string['modulename_help'] = 'The Video xAPI activity enables students to watch videos with comprehensive learning analytics tracking through xAPI statements.';
 
 // Form strings.

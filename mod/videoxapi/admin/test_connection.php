@@ -20,15 +20,14 @@ $PAGE->set_heading(get_string('testconnection', 'videoxapi'));
 echo $OUTPUT->header();
 echo $OUTPUT->heading(get_string('testconnection', 'videoxapi'));
 
-// Get xAPI configuration
-$config = new \mod_videoxapi\ConfigManager();
-$lrs_endpoint = $config->get_lrs_endpoint();
-$lrs_username = $config->get_lrs_username();
-$lrs_password = $config->get_lrs_password();
+// Get xAPI configuration using static methods
+$lrs_endpoint = \mod_videoxapi\xapi\ConfigManager::getLrsEndpoint();
+$lrs_username = \mod_videoxapi\xapi\ConfigManager::getLrsUsername();
+$lrs_password = \mod_videoxapi\xapi\ConfigManager::getLrsPassword();
 
 if (empty($lrs_endpoint)) {
     echo $OUTPUT->notification(get_string('lrsnotconfigured', 'videoxapi'), 'error');
-    echo $OUTPUT->single_button(new moodle_url('/admin/settings.php', ['section' => 'modsettingvideoxapi']), 
+    echo $OUTPUT->single_button(new moodle_url('/admin/settings.php', ['section' => 'modsetting_videoxapi']), 
         get_string('configurelrs', 'videoxapi'));
 } else {    // Test connection
     $success = false;
@@ -86,7 +85,7 @@ if (empty($lrs_endpoint)) {
 
 // Back to settings button
 echo html_writer::start_tag('div', ['class' => 'mt-4']);
-echo $OUTPUT->single_button(new moodle_url('/admin/settings.php', ['section' => 'modsettingvideoxapi']), 
+echo $OUTPUT->single_button(new moodle_url('/admin/settings.php', ['section' => 'modsetting_videoxapi']), 
     get_string('backtosettings', 'videoxapi'));
 echo html_writer::end_tag('div');
 
