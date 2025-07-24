@@ -53,8 +53,8 @@ class ConfigManager {
      * @return string|null LRS username
      */
     public static function getLrsUsername() {
-        $encrypted = get_config('mod_videoxapi', 'lrs_username');
-        return $encrypted ? self::decrypt($encrypted) : null;
+        // Temporarily disable encryption for debugging
+        return get_config('mod_videoxapi', 'lrs_username');
     }
 
     /**
@@ -74,8 +74,8 @@ class ConfigManager {
      * @return string|null LRS password
      */
     public static function getLrsPassword() {
-        $encrypted = get_config('mod_videoxapi', 'lrs_password');
-        return $encrypted ? self::decrypt($encrypted) : null;
+        // Temporarily disable encryption for debugging
+        return get_config('mod_videoxapi', 'lrs_password');
     }
 
     /**

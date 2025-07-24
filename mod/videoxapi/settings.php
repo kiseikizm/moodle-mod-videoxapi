@@ -46,7 +46,7 @@ if ($hassiteconfig) {
     ));
 
     // LRS username.
-    $settings->add(new admin_setting_configpasswordunmask('mod_videoxapi/lrs_username',
+    $settings->add(new admin_setting_configtext('mod_videoxapi/lrs_username',
         get_string('lrsusername', 'videoxapi'),
         get_string('lrsusername_desc', 'videoxapi'),
         ''

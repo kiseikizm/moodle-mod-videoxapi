@@ -25,6 +25,14 @@ $lrs_endpoint = \mod_videoxapi\xapi\ConfigManager::getLrsEndpoint();
 $lrs_username = \mod_videoxapi\xapi\ConfigManager::getLrsUsername();
 $lrs_password = \mod_videoxapi\xapi\ConfigManager::getLrsPassword();
 
+// Debug information
+echo html_writer::start_tag('div', ['class' => 'alert alert-info']);
+echo html_writer::tag('h5', 'Debug Information');
+echo html_writer::tag('p', 'Raw endpoint: ' . var_export($lrs_endpoint, true));
+echo html_writer::tag('p', 'Raw username: ' . var_export($lrs_username, true));
+echo html_writer::tag('p', 'Raw password: ' . var_export($lrs_password, true));
+echo html_writer::end_tag('div');
+
 if (empty($lrs_endpoint)) {
     echo $OUTPUT->notification(get_string('lrsnotconfigured', 'videoxapi'), 'error');
     echo $OUTPUT->single_button(new moodle_url('/admin/settings.php', ['section' => 'modsetting_videoxapi']), 
