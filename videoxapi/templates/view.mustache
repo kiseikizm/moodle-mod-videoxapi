@@ -60,26 +60,22 @@
             {{#videoxapi.video_width}}width="{{videoxapi.video_width}}"{{/videoxapi.video_width}}
             {{#videoxapi.video_height}}height="{{videoxapi.video_height}}"{{/videoxapi.video_height}}
             {{#videoxapi.responsive_sizing}}data-responsive="true"{{/videoxapi.responsive_sizing}}
-            data-setup='{"fluid": {{#videoxapi.responsive_sizing}}true{{/videoxapi.responsive_sizing}}{{^videoxapi.responsive_sizing}}false{{/videoxapi.responsive_sizing}}}'
-            crossorigin="anonymous"
+            data-setup="{}"
         >
-            <!-- Video source will be set by JavaScript to ensure proper MIME type -->
+            <!-- Fallback source for browsers without JavaScript -->
+            <source src="{{videourl}}" type="video/mp4">
+            
             <p class="vjs-no-js">
                 JavaScript devre dışı veya desteklenmiyor. Video izlemek için lütfen JavaScript'i etkinleştirin.
                 <br>
-                <a href="https://videojs.com/html5-video-support/" target="_blank">
-                    Tarayıcınızı güncelleyin
-                </a>
+                <a href="{{videourl}}" target="_blank">Videoyu doğrudan açmak için tıklayın</a>
             </p>
         </video>
         
-        <!-- Fallback for direct video access -->
-        <noscript>
-            <div class="alert alert-warning">
-                <strong>JavaScript Gerekli:</strong> Bu video oynatıcı JavaScript gerektirir. 
-                <a href="{{videourl}}" target="_blank">Videoyu doğrudan açmak için tıklayın</a>.
-            </div>
-        </noscript>
+        <!-- Debug info for troubleshooting -->
+        <div style="margin-top: 10px; font-size: 12px; color: #666;">
+            Video URL: <a href="{{videourl}}" target="_blank">{{videourl}}</a>
+        </div>
     </div>
     {{/hasvideo}}
 

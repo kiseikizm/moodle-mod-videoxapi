@@ -191,23 +191,59 @@ function videoxapi_get_coursemodule_info($coursemodule) {
 function videoxapi_pluginfile($course, $cm, $context, $filearea, $args, $forcedownload, array $options = array()) {
     global $DB, $CFG;
 
+    // Debug logging
+    if (debugging()) {
+        error_log("videoxapi_pluginfile called with: context={$context->id}, filearea={$filearea}, args=" . implode('/', $args));
+    }
+
     if ($context->contextlevel != CONTEXT_MODULE) {
+        if (debugging()) {
+            error_log("videoxapi_pluginfile: Invalid context level");
+        }
         send_file_not_found();
     }
 
     require_login($course, true, $cm);
+    
+    // Check capability
+    if (!has_capability('mod/videoxapi:view', $context)) {
+        if (debugging()) {
+            error_log("videoxapi_pluginfile: No view capability");
+        }
+        send_file_not_found();
+    }
 
     if ($filearea !== 'video') {
+        if (debugging()) {
+            error_log("videoxapi_pluginfile: Invalid filearea: {$filearea}");
+        }
         send_file_not_found();
     }
 
     $relativepath = implode('/', $args);
-    $fullpath = rtrim("/{$context->id}/mod_videoxapi/{$filearea}/0/{$relativepath}", '/');
-
+    
+    // Try different approaches to find the file
     $fs = get_file_storage();
-    $file = $fs->get_file_by_hash(sha1($fullpath));
+    
+    // Method 1: Direct file lookup
+    $file = $fs->get_file($context->id, 'mod_videoxapi', $filearea, 0, '/', $relativepath);
+    
+    if (!$file || $file->is_directory()) {
+        // Method 2: Get all files and find matching filename
+        $files = $fs->get_area_files($context->id, 'mod_videoxapi', $filearea, 0, 'filename', false);
+        foreach ($files as $f) {
+            if ($f->get_filename() === $relativepath) {
+                $file = $f;
+                break;
+            }
+        }
+    }
 
     if (!$file || $file->is_directory()) {
+        if (debugging()) {
+            error_log("videoxapi_pluginfile: File not found: {$relativepath}");
+            error_log("Available files: " . print_r(array_map(function($f) { return $f->get_filename(); }, $files), true));
+        }
         send_file_not_found();
     }
 
@@ -233,6 +269,10 @@ function videoxapi_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
     // Add headers for video streaming
     $options['cacheability'] = 'public';
     $options['immutable'] = false;
+    
+    if (debugging()) {
+        error_log("videoxapi_pluginfile: Serving file: {$filename}, MIME: " . ($options['mimetype'] ?? 'default'));
+    }
     
     send_stored_file($file, null, 0, $forcedownload, $options);
 }

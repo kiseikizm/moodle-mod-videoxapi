@@ -60,15 +60,27 @@ if ($videoxapi->video_source === 'file') {
     $files = $fs->get_area_files($context->id, 'mod_videoxapi', 'video', 0, 'filename', false);
     if (!empty($files)) {
         $file = reset($files);
+        
+        // Create URL with proper token for authentication
         $videourl = moodle_url::make_pluginfile_url(
             $file->get_contextid(),
             $file->get_component(),
             $file->get_filearea(),
             $file->get_itemid(),
             $file->get_filepath(),
-            $file->get_filename()
+            $file->get_filename(),
+            false  // Don't force download
         )->out();
+        
         $hasvideo = true;
+        
+        // Debug: Log file details
+        if (debugging()) {
+            error_log("Video file details: " . $file->get_filename() . 
+                     ", Context: " . $file->get_contextid() . 
+                     ", Component: " . $file->get_component() . 
+                     ", Area: " . $file->get_filearea());
+        }
     }
 } else if ($videoxapi->video_source === 'url' && !empty($videoxapi->video_url)) {
     $videourl = $videoxapi->video_url;
@@ -130,20 +142,49 @@ if (debugging()) {
         echo '<br><strong>Video URL Test:</strong><br>';
         echo '<a href="' . $videourl . '" target="_blank">Test Video URL</a><br>';
         
-        // Check if URL is accessible
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $videourl);
-        curl_setopt($ch, CURLOPT_NOBODY, true);
-        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
-        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        $result = curl_exec($ch);
-        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-        $contenttype = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
-        curl_close($ch);
+        // Parse URL to check structure
+        $parsedurl = parse_url($videourl);
+        echo 'URL Structure: ' . print_r($parsedurl, true) . '<br>';
         
-        echo 'HTTP Status: ' . $httpcode . '<br>';
-        echo 'Content Type: ' . ($contenttype ?: 'unknown') . '<br>';
+        // Check if URL is accessible
+        if (function_exists('curl_init')) {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $videourl);
+            curl_setopt($ch, CURLOPT_NOBODY, true);
+            curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            $result = curl_exec($ch);
+            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $contenttype = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+            $error = curl_error($ch);
+            curl_close($ch);
+            
+            echo 'HTTP Status: ' . $httpcode . '<br>';
+            echo 'Content Type: ' . ($contenttype ?: 'unknown') . '<br>';
+            if ($error) {
+                echo 'CURL Error: ' . $error . '<br>';
+            }
+        } else {
+            echo 'CURL not available<br>';
+        }
+        
+        // Check if this is a pluginfile URL
+        if (strpos($videourl, 'pluginfile.php') !== false) {
+            echo '<strong>Pluginfile URL detected - checking file system:</strong><br>';
+            
+            // Extract context ID from URL
+            if (preg_match('/pluginfile\.php\/(\d+)\//', $videourl, $matches)) {
+                $contextid = $matches[1];
+                echo 'Context ID from URL: ' . $contextid . '<br>';
+                echo 'Current Context ID: ' . $context->id . '<br>';
+                
+                if ($contextid != $context->id) {
+                    echo '<span style="color: red;">WARNING: Context ID mismatch!</span><br>';
+                }
+            }
+        }
     }
     echo '</div>';
 }

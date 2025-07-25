@@ -150,6 +150,9 @@ define(['jquery', 'core/ajax', 'core/notification'], function ($, Ajax, Notifica
                 src: this.config.videoUrl,
                 type: this.getVideoMimeType(this.config.videoUrl)
             });
+            
+            // Force load the video
+            this.player.load();
 
             // Handle player ready
             this.player.ready(() => {
