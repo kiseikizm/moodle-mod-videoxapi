@@ -9,6 +9,8 @@
 
 defined('MOODLE_INTERNAL') || die();
 
+use context_course;
+
 /**
  * Return if the plugin supports $feature.
  *
@@ -69,7 +71,7 @@ function videoxapi_add_instance($moduleinstance, $mform = null) {
 
     // Trigger module instance created event.
     $event = \mod_videoxapi\event\course_module_instance_list_viewed::create(array(
-        'context' => context_module::instance($moduleinstance->coursemodule),
+        'context' => context_course::instance($moduleinstance->course),
         'objectid' => $id,
     ));
     $event->trigger();
