@@ -111,7 +111,23 @@ if ($hassiteconfig) {
         get_string('connectiontimeout_desc', 'videoxapi'),
         30,
         PARAM_INT
-    ));    // Test connection link.
+    ));
+
+    // Video settings section.
+    $settings->add(new admin_setting_heading('videoxapi_video_heading',
+        get_string('videoconfig', 'videoxapi'),
+        get_string('videoconfig_desc', 'videoxapi')
+    ));
+
+    // Maximum video file size.
+    $settings->add(new admin_setting_configtext('mod_videoxapi/max_video_size',
+        get_string('maxvideosize', 'videoxapi'),
+        get_string('maxvideosize_desc', 'videoxapi'),
+        100,
+        PARAM_INT
+    ));
+
+    // Test connection link.
     $settings->add(new admin_setting_heading('videoxapi_testlink',
         get_string('testconnection', 'videoxapi'),
         html_writer::link(

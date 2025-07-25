@@ -188,7 +188,15 @@ $string['bookmarksdisabled'] = 'Bu etkinlik için yer imleri devre dışı.';
 $string['privacy:metadata:lrs'] = 'Öğrenme Kayıt Deposuna gönderilen video etkileşim verileri';
 $string['privacy:metadata:lrs:userid'] = 'xAPI bildirimleri için kullanıcı tanımlayıcısı';
 $string['privacy:metadata:lrs:timestamp'] = 'Video etkileşiminin zaman damgası';
-$string['privacy:metadata:lrs:videointeraction'] = 'Video etkileşim detayları (oynat, durdur, ara, vb.)';// Test connection additional strings.
+$string['privacy:metadata:lrs:videointeraction'] = 'Video etkileşim detayları (oynat, durdur, ara, vb.)';
+
+// Video Configuration strings.
+$string['videoconfig'] = 'Video Yapılandırması';
+$string['videoconfig_desc'] = 'Video dosyası yükleme ve görüntü ayarlarını yapılandırın.';
+$string['maxvideosize'] = 'Maksimum video dosyası boyutu (MB)';
+$string['maxvideosize_desc'] = 'Video dosyası yüklemeleri için megabayt cinsinden izin verilen maksimum boyut. Varsayılan 100 MB.';
+
+// Test connection additional strings.
 $string['lrsnotconfigured'] = 'LRS uç noktası yapılandırılmamış';
 $string['connectionerror'] = 'Bağlantı hatası';
 $string['connectionsuccess'] = 'Bağlantı başarılı! LRS doğru şekilde yanıt veriyor.';

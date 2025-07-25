@@ -61,17 +61,26 @@ class mod_videoxapi_mod_form extends moodleform_mod {
         $mform->hideIf('video_url', 'video_source', 'eq', 'file');
 
         // Video file upload.
+        $maxvideosize = get_config('mod_videoxapi', 'max_video_size') ?: 100; // Default 100MB
+        $maxvideobytes = $maxvideosize * 1024 * 1024; // Convert MB to bytes
+        
         $mform->addElement('filemanager', 'video_file', get_string('videofile', 'videoxapi'), null,
             [
                 'subdirs' => 0,
-                'maxbytes' => $CFG->maxbytes,
-                'areamaxbytes' => 10485760, // 10MB limit for video files.
+                'maxbytes' => min($CFG->maxbytes, $maxvideobytes),
+                'areamaxbytes' => $maxvideobytes,
                 'maxfiles' => 1,
                 'accepted_types' => ['video'],
                 'return_types' => FILE_INTERNAL | FILE_EXTERNAL
             ]
         );
         $mform->addHelpButton('video_file', 'videofile', 'videoxapi');
+        
+        // Add note about maximum file size
+        $mform->addElement('static', 'video_file_note', '', 
+            get_string('maxvideosize', 'videoxapi') . ': ' . $maxvideosize . ' MB');
+        $mform->hideIf('video_file_note', 'video_source', 'eq', 'url');
+        
         $mform->hideIf('video_file', 'video_source', 'eq', 'url');
 
         // Video display settings section.

@@ -56,13 +56,20 @@ function videoxapi_add_instance($moduleinstance, $mform = null) {
     $moduleinstance->timemodified = time();    // Handle file uploads if video source is file.
     if ($moduleinstance->video_source === 'file' && $mform) {
         $context = context_module::instance($moduleinstance->coursemodule);
+        $maxvideosize = get_config('mod_videoxapi', 'max_video_size') ?: 100;
+        $maxvideobytes = $maxvideosize * 1024 * 1024;
+        
         file_save_draft_area_files(
             $moduleinstance->video_file,
             $context->id,
             'mod_videoxapi',
             'video',
             0,
-            array('subdirs' => 0, 'maxfiles' => 1)
+            array(
+                'subdirs' => 0, 
+                'maxfiles' => 1,
+                'maxbytes' => $maxvideobytes
+            )
         );
     }
 
@@ -97,13 +104,20 @@ function videoxapi_add_instance($moduleinstance, $mform = null) {
     // Handle file uploads if video source is file.
     if ($moduleinstance->video_source === 'file' && $mform) {
         $context = context_module::instance($moduleinstance->coursemodule);
+        $maxvideosize = get_config('mod_videoxapi', 'max_video_size') ?: 100;
+        $maxvideobytes = $maxvideosize * 1024 * 1024;
+        
         file_save_draft_area_files(
             $moduleinstance->video_file,
             $context->id,
             'mod_videoxapi',
             'video',
             0,
-            array('subdirs' => 0, 'maxfiles' => 1)
+            array(
+                'subdirs' => 0, 
+                'maxfiles' => 1,
+                'maxbytes' => $maxvideobytes
+            )
         );
     }
 

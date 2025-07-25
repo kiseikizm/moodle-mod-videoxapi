@@ -27,7 +27,7 @@ $string['videosourcetype_help'] = 'Choose whether to use a video file uploaded t
 $string['videourl'] = 'Video URL';
 $string['videourl_help'] = 'Enter the direct URL to the video file. Supported formats: MP4, WebM, OGG.';
 $string['videofile'] = 'Video file';
-$string['videofile_help'] = 'Upload a video file to Moodle. Maximum file size is 10MB.';
+$string['videofile_help'] = 'Upload a video file to Moodle. Maximum file size is configured by administrator.';
 
 // Video display settings.
 $string['videodisplay'] = 'Video display settings';
@@ -182,6 +182,12 @@ $string['bookmarkdeleted'] = 'Bookmark deleted successfully.';
 $string['confirmdeletebookmark'] = 'Are you sure you want to delete this bookmark?';
 $string['duplicatebookmark'] = 'A bookmark already exists at this timestamp.';
 $string['bookmarksdisabled'] = 'Bookmarks are disabled for this activity.';
+
+// Video Configuration strings.
+$string['videoconfig'] = 'Video Configuration';
+$string['videoconfig_desc'] = 'Configure video file upload and display settings.';
+$string['maxvideosize'] = 'Maximum video file size (MB)';
+$string['maxvideosize_desc'] = 'Maximum allowed size for video file uploads in megabytes. Default is 100 MB.';
 
 // Privacy strings.
 $string['privacy:metadata:lrs'] = 'Video interaction data sent to Learning Record Store';
