@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Video Test</title>
+    <link href="https://vjs.zencdn.net/8.6.1/video-js.css" rel="stylesheet">
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-container { max-width: 800px; margin: 0 auto; }
+        .alert { padding: 15px; margin: 10px 0; border-radius: 4px; }
+        .alert-info { background-color: #d1ecf1; border: 1px solid #bee5eb; color: #0c5460; }
+        .alert-danger { background-color: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>Video xAPI Test</h1>
+        
+        <div class="alert alert-info">
+            <strong>Test Bilgisi:</strong> Bu sayfa Video.js'in doğru çalışıp çalışmadığını test etmek içindir.
+        </div>
+        
+        <div id="video-container">
+            <video
+                id="test-video-player"
+                class="video-js vjs-default-skin"
+                controls
+                preload="metadata"
+                width="640"
+                height="360"
+                data-setup="{}"
+            >
+                <source src="http://10.1.1.139/pluginfile.php/712/mod_videoxapi/video/0/4287245_uhd_3840_2160_30fps.mp4" type="video/mp4">
+                <p class="vjs-no-js">
+                    JavaScript devre dışı. Video izlemek için JavaScript'i etkinleştirin.
+                </p>
+            </video>
+        </div>
+        
+        <div id="debug-info" style="margin-top: 20px;">
+            <h3>Debug Bilgileri:</h3>
+            <div id="debug-content"></div>
+        </div>
+    </div>
+
+    <script src="https://vjs.zencdn.net/8.6.1/video.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const debugDiv = document.getElementById('debug-content');
+            
+            function addDebugInfo(message) {
+                debugDiv.innerHTML += '<p>' + new Date().toLocaleTimeString() + ': ' + message + '</p>';
+            }
+            
+            addDebugInfo('Video.js yükleniyor...');
+            
+            if (typeof videojs !== 'undefined') {
+                addDebugInfo('Video.js başarıyla yüklendi');
+                
+                const player = videojs('test-video-player', {
+                    fluid: true,
+                    responsive: true
+                });
+                
+                player.ready(function() {
+                    addDebugInfo('Video oynatıcı hazır');
+                });
+                
+                player.on('loadstart', function() {
+                    addDebugInfo('Video yükleme başladı');
+                });
+                
+                player.on('canplay', function() {
+                    addDebugInfo('Video oynatılabilir durumda');
+                });
+                
+                player.on('error', function() {
+                    const error = player.error();
+                    addDebugInfo('HATA: ' + (error ? error.message : 'Bilinmeyen hata'));
+                });
+                
+                player.on('play', function() {
+                    addDebugInfo('Video oynatılmaya başlandı');
+                });
+                
+            } else {
+                addDebugInfo('HATA: Video.js yüklenemedi');
+            }
+        });
+    </script>
+</body>
+</html>

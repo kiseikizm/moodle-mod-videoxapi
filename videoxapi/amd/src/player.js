@@ -8,7 +8,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notification) {
+define(['jquery', 'core/ajax', 'core/notification'], function ($, Ajax, Notification) {
     'use strict';
 
     /**
@@ -27,7 +27,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
             this.trackingLevel = config.trackingLevel || 3;
             this.bookmarksEnabled = config.bookmarksEnabled || false;
             this.bookmarks = [];
-            
+
             this.init();
         }
 
@@ -36,12 +36,38 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
          */
         init() {
             this.loadVideoJS().then(() => {
-                this.setupPlayer();
-                this.setupEventListeners();
-                this.loadBookmarks();
+                // Wait for DOM to be ready
+                if (document.readyState === 'loading') {
+                    document.addEventListener('DOMContentLoaded', () => {
+                        this.setupPlayer();
+                        this.setupEventListeners();
+                        this.loadBookmarks();
+                    });
+                } else {
+                    this.setupPlayer();
+                    this.setupEventListeners();
+                    this.loadBookmarks();
+                }
             }).catch((error) => {
+                console.error('Video.js initialization failed:', error);
+                this.showVideoError('Video oynatıcı yüklenemedi. Lütfen sayfayı yenileyin.');
                 Notification.exception(error);
             });
+        }
+
+        /**
+         * Show video error message
+         * @param {string} message Error message
+         */
+        showVideoError(message) {
+            const playerElement = document.getElementById(this.config.playerId);
+            if (playerElement) {
+                playerElement.innerHTML = `
+                    <div class="alert alert-danger" role="alert">
+                        <strong>Video Hatası:</strong> ${message}
+                    </div>
+                `;
+            }
         }        /**
          * Load Video.js library
          * @returns {Promise}
@@ -57,13 +83,31 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
                 const cssLink = document.createElement('link');
                 cssLink.rel = 'stylesheet';
                 cssLink.href = 'https://vjs.zencdn.net/8.6.1/video-js.css';
+                cssLink.onerror = () => {
+                    console.warn('Failed to load Video.js CSS from CDN');
+                };
                 document.head.appendChild(cssLink);
 
-                // Load Video.js JavaScript
+                // Load Video.js JavaScript with fallback
                 const script = document.createElement('script');
                 script.src = 'https://vjs.zencdn.net/8.6.1/video.min.js';
-                script.onload = resolve;
-                script.onerror = () => reject(new Error('Failed to load Video.js'));
+
+                script.onload = () => {
+                    // Wait a bit for Video.js to initialize
+                    setTimeout(() => {
+                        if (window.videojs) {
+                            resolve();
+                        } else {
+                            reject(new Error('Video.js loaded but not available'));
+                        }
+                    }, 100);
+                };
+
+                script.onerror = () => {
+                    console.error('Failed to load Video.js from CDN');
+                    reject(new Error('Failed to load Video.js - CDN unavailable'));
+                };
+
                 document.head.appendChild(script);
             });
         }
@@ -77,6 +121,10 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
                 responsive: this.config.responsive || true,
                 fluid: this.config.responsive || true,
                 playbackRates: [0.5, 1, 1.25, 1.5, 2],
+                sources: [{
+                    src: this.config.videoUrl,
+                    type: this.getVideoMimeType(this.config.videoUrl)
+                }],
                 plugins: {
                     hotkeys: {
                         volumeStep: 0.1,
@@ -97,6 +145,12 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
             // Add custom styling
             this.player.addClass('videoxapi-player');
 
+            // Set video source after player is created
+            this.player.src({
+                src: this.config.videoUrl,
+                type: this.getVideoMimeType(this.config.videoUrl)
+            });
+
             // Handle player ready
             this.player.ready(() => {
                 this.onPlayerReady();
@@ -106,6 +160,36 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
             this.player.on('error', () => {
                 this.handleError();
             });
+
+            // Load start event
+            this.player.on('loadstart', () => {
+                console.log('Video loading started:', this.config.videoUrl);
+            });
+
+            // Can play event
+            this.player.on('canplay', () => {
+                console.log('Video can play');
+            });
+        }
+
+        /**
+         * Get video MIME type from URL
+         * @param {string} url Video URL
+         * @returns {string} MIME type
+         */
+        getVideoMimeType(url) {
+            const extension = url.split('.').pop().toLowerCase();
+            const mimeTypes = {
+                'mp4': 'video/mp4',
+                'webm': 'video/webm',
+                'ogg': 'video/ogg',
+                'avi': 'video/x-msvideo',
+                'mov': 'video/quicktime',
+                'wmv': 'video/x-ms-wmv',
+                'flv': 'video/x-flv',
+                'm4v': 'video/x-m4v'
+            };
+            return mimeTypes[extension] || 'video/mp4';
         }        /**
          * Setup event listeners for xAPI tracking
          */
@@ -296,10 +380,10 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
         createBookmark() {
             const currentTime = this.player.currentTime();
             const title = prompt('Bookmark title:');
-            
+
             if (title) {
                 const description = prompt('Bookmark description (optional):') || '';
-                
+
                 this.saveBookmark(currentTime, title, description);
             }
         }        /**
@@ -371,7 +455,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
 
             const percentage = (bookmark.timestamp / duration) * 100;
             const progressBar = this.player.el().querySelector('.vjs-progress-control');
-            
+
             if (progressBar) {
                 const marker = document.createElement('div');
                 marker.className = 'vjs-bookmark-marker';
@@ -380,7 +464,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
                 marker.addEventListener('click', () => {
                     this.player.currentTime(bookmark.timestamp);
                 });
-                
+
                 progressBar.appendChild(marker);
             }
         }
@@ -391,13 +475,37 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
         handleError() {
             const error = this.player.error();
             console.error('Video player error:', error);
-            
+
+            // Show user-friendly error message
+            let errorMessage = 'Video oynatılırken bir hata oluştu.';
+            if (error) {
+                switch (error.code) {
+                    case 1:
+                        errorMessage = 'Video yükleme iptal edildi.';
+                        break;
+                    case 2:
+                        errorMessage = 'Ağ hatası nedeniyle video yüklenemedi.';
+                        break;
+                    case 3:
+                        errorMessage = 'Video decode edilemedi.';
+                        break;
+                    case 4:
+                        errorMessage = 'Video formatı desteklenmiyor veya dosya bulunamadı.';
+                        break;
+                    default:
+                        errorMessage = error.message || 'Bilinmeyen video hatası.';
+                }
+            }
+
+            // Show error in player
+            this.showVideoError(errorMessage);
+
             // Send error statement if tracking is enabled
             if (this.trackingLevel > 0) {
                 this.sendXAPIStatement('experienced', {
                     time: this.player.currentTime() || 0,
                     length: this.player.duration() || 0,
-                    error: error.message || 'Unknown error'
+                    error: errorMessage
                 });
             }
         }
@@ -456,7 +564,7 @@ define(['jquery', 'core/ajax', 'core/notification'], function($, Ajax, Notificat
          * @param {Object} config Player configuration
          * @returns {VideoXAPIPlayer} Player instance
          */
-        init: function(config) {
+        init: function (config) {
             return new VideoXAPIPlayer(config);
         }
     };

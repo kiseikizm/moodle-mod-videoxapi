@@ -202,7 +202,6 @@ function videoxapi_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
     }
 
     $relativepath = implode('/', $args);
-
     $fullpath = rtrim("/{$context->id}/mod_videoxapi/{$filearea}/0/{$relativepath}", '/');
 
     $fs = get_file_storage();
@@ -212,6 +211,29 @@ function videoxapi_pluginfile($course, $cm, $context, $filearea, $args, $forcedo
         send_file_not_found();
     }
 
+    // Set proper MIME type for video files
+    $filename = $file->get_filename();
+    $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+    
+    $mimetypes = [
+        'mp4' => 'video/mp4',
+        'webm' => 'video/webm',
+        'ogg' => 'video/ogg',
+        'avi' => 'video/x-msvideo',
+        'mov' => 'video/quicktime',
+        'wmv' => 'video/x-ms-wmv',
+        'flv' => 'video/x-flv',
+        'm4v' => 'video/x-m4v'
+    ];
+    
+    if (isset($mimetypes[$extension])) {
+        $options['mimetype'] = $mimetypes[$extension];
+    }
+
+    // Add headers for video streaming
+    $options['cacheability'] = 'public';
+    $options['immutable'] = false;
+    
     send_stored_file($file, null, 0, $forcedownload, $options);
 }
 

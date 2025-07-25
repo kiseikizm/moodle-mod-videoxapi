@@ -56,21 +56,30 @@
             id="{{playerid}}"
             class="video-js vjs-default-skin videoxapi-player"
             controls
-            preload="auto"
+            preload="metadata"
             {{#videoxapi.video_width}}width="{{videoxapi.video_width}}"{{/videoxapi.video_width}}
             {{#videoxapi.video_height}}height="{{videoxapi.video_height}}"{{/videoxapi.video_height}}
             {{#videoxapi.responsive_sizing}}data-responsive="true"{{/videoxapi.responsive_sizing}}
-            data-setup="{}"
+            data-setup='{"fluid": {{#videoxapi.responsive_sizing}}true{{/videoxapi.responsive_sizing}}{{^videoxapi.responsive_sizing}}false{{/videoxapi.responsive_sizing}}}'
+            crossorigin="anonymous"
         >
-            <source src="{{videourl}}" type="video/mp4" />
+            <!-- Video source will be set by JavaScript to ensure proper MIME type -->
             <p class="vjs-no-js">
-                {{#str}}errorloadingvideo, videoxapi{{/str}}
+                JavaScript devre dışı veya desteklenmiyor. Video izlemek için lütfen JavaScript'i etkinleştirin.
                 <br>
                 <a href="https://videojs.com/html5-video-support/" target="_blank">
-                    {{#str}}upgradedbrowser, core{{/str}}
+                    Tarayıcınızı güncelleyin
                 </a>
             </p>
         </video>
+        
+        <!-- Fallback for direct video access -->
+        <noscript>
+            <div class="alert alert-warning">
+                <strong>JavaScript Gerekli:</strong> Bu video oynatıcı JavaScript gerektirir. 
+                <a href="{{videourl}}" target="_blank">Videoyu doğrudan açmak için tıklayın</a>.
+            </div>
+        </noscript>
     </div>
     {{/hasvideo}}
 

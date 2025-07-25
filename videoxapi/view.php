@@ -115,9 +115,35 @@ if (debugging()) {
         echo 'Files found: ' . count($files) . '<br>';
         if (!empty($files)) {
             foreach ($files as $file) {
-                echo 'File: ' . $file->get_filename() . '<br>';
+                $filename = $file->get_filename();
+                $extension = strtolower(pathinfo($filename, PATHINFO_EXTENSION));
+                $filesize = display_size($file->get_filesize());
+                echo 'File: ' . $filename . ' (' . $filesize . ', ext: ' . $extension . ')<br>';
+                echo 'MIME Type: ' . $file->get_mimetype() . '<br>';
+                echo 'File Hash: ' . $file->get_contenthash() . '<br>';
             }
         }
+    }
+    
+    // Test video URL accessibility
+    if (!empty($videourl)) {
+        echo '<br><strong>Video URL Test:</strong><br>';
+        echo '<a href="' . $videourl . '" target="_blank">Test Video URL</a><br>';
+        
+        // Check if URL is accessible
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $videourl);
+        curl_setopt($ch, CURLOPT_NOBODY, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        $result = curl_exec($ch);
+        $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $contenttype = curl_getinfo($ch, CURLINFO_CONTENT_TYPE);
+        curl_close($ch);
+        
+        echo 'HTTP Status: ' . $httpcode . '<br>';
+        echo 'Content Type: ' . ($contenttype ?: 'unknown') . '<br>';
     }
     echo '</div>';
 }
