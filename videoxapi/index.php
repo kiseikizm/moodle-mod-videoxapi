@@ -30,13 +30,13 @@ $PAGE->set_context($coursecontext);
 
 echo $OUTPUT->header();
 
-$modulenameplural = get_string('modulenameplural', 'mod_videoxapi');
+$modulenameplural = get_string('modulenameplural', 'videoxapi');
 echo $OUTPUT->heading($modulenameplural);
 
 $videoxapis = get_all_instances_in_course('videoxapi', $course);
 
 if (empty($videoxapis)) {
-    notice(get_string('no$MODULENAMEs', 'mod_videoxapi'), new moodle_url('/course/view.php', array('id' => $course->id)));
+    notice(get_string('no$MODULENAMEs', 'videoxapi'), new moodle_url('/course/view.php', array('id' => $course->id)));
 }
 
 $table = new html_table();

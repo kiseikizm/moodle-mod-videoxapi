@@ -70,7 +70,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
             container.empty();
 
             if (this.bookmarks.length === 0) {
-                container.append('<p class="text-muted">' + M.util.get_string('nobookmarks', 'mod_videoxapi') + '</p>');
+                container.append('<p class="text-muted">' + M.util.get_string('nobookmarks', 'videoxapi') + '</p>');
                 return;
             }
 
@@ -154,7 +154,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
          * @param {number} bookmarkId Bookmark ID
          */
         deleteBookmark(bookmarkId) {
-            Str.get_string('confirmdeletebookmark', 'mod_videoxapi').then((confirmText) => {
+            Str.get_string('confirmdeletebookmark', 'videoxapi').then((confirmText) => {
                 if (confirm(confirmText)) {
                     const promises = Ajax.call([{
                         methodname: 'mod_videoxapi_delete_bookmark',
@@ -166,7 +166,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
                     promises[0].then(() => {
                         this.loadBookmarks(); // Reload bookmarks
                         Notification.addNotification({
-                            message: M.util.get_string('bookmarkdeleted', 'mod_videoxapi'),
+                            message: M.util.get_string('bookmarkdeleted', 'videoxapi'),
                             type: 'success'
                         });
                     }).catch((error) => {
@@ -196,7 +196,7 @@ define(['jquery', 'core/ajax', 'core/notification', 'core/str'], function($, Aja
             promises[0].then(() => {
                 this.loadBookmarks(); // Reload bookmarks
                 Notification.addNotification({
-                    message: M.util.get_string('bookmarksaved', 'mod_videoxapi'),
+                    message: M.util.get_string('bookmarksaved', 'videoxapi'),
                     type: 'success'
                 });
             }).catch((error) => {

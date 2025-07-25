@@ -40,25 +40,56 @@ $event->add_record_snapshot('videoxapi', $videoxapi);
 $event->trigger();
 
 $completion = new completion_info($course);
-$completion->set_module_viewed($cm);$PAGE->set_url('/mod/videoxapi/view.php', array('id' => $cm->id));
+$completion->set_module_viewed($cm);
+
+$PAGE->set_url('/mod/videoxapi/view.php', array('id' => $cm->id));
 $PAGE->set_title(format_string($videoxapi->name));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
-// Add CSS and JavaScript.
+// Add CSS.
 $PAGE->requires->css('/mod/videoxapi/styles/styles.css');
-$PAGE->requires->js_call_amd('mod_videoxapi/player', 'init', [
-    [
-        'playerId' => 'videoxapi-player-' . $videoxapi->id,
-        'videoxapiId' => $videoxapi->id,
-        'videoUrl' => $videoxapi->video_url,
-        'width' => $videoxapi->video_width,
-        'height' => $videoxapi->video_height,
-        'responsive' => !empty($videoxapi->responsive_sizing),
-        'trackingLevel' => $videoxapi->xapi_tracking_level,
-        'bookmarksEnabled' => !empty($videoxapi->enable_bookmarks)
-    ]
-]);
+
+// Determine video URL and check if video is configured.
+$videourl = '';
+$hasvideo = false;
+
+if ($videoxapi->video_source === 'file') {
+    // Handle uploaded file.
+    $fs = get_file_storage();
+    $files = $fs->get_area_files($context->id, 'mod_videoxapi', 'video', 0, 'filename', false);
+    if (!empty($files)) {
+        $file = reset($files);
+        $videourl = moodle_url::make_pluginfile_url(
+            $file->get_contextid(),
+            $file->get_component(),
+            $file->get_filearea(),
+            $file->get_itemid(),
+            $file->get_filepath(),
+            $file->get_filename()
+        )->out();
+        $hasvideo = true;
+    }
+} else if ($videoxapi->video_source === 'url' && !empty($videoxapi->video_url)) {
+    $videourl = $videoxapi->video_url;
+    $hasvideo = true;
+}
+
+// Add JavaScript for video player if video is available.
+if ($hasvideo && !empty($videourl)) {
+    $PAGE->requires->js_call_amd('mod_videoxapi/player', 'init', [
+        [
+            'playerId' => 'videoxapi-player-' . $videoxapi->id,
+            'videoxapiId' => $videoxapi->id,
+            'videoUrl' => $videourl,
+            'width' => $videoxapi->video_width ?? 640,
+            'height' => $videoxapi->video_height ?? 360,
+            'responsive' => !empty($videoxapi->responsive_sizing),
+            'trackingLevel' => $videoxapi->xapi_tracking_level ?? 'standard',
+            'bookmarksEnabled' => !empty($videoxapi->enable_bookmarks)
+        ]
+    ]);
+}
 
 echo $OUTPUT->header();
 
@@ -69,18 +100,56 @@ if (trim(strip_tags($videoxapi->intro))) {
     echo $OUTPUT->box_end();
 }
 
+// Debug: Show video configuration info (remove in production)
+if (debugging()) {
+    echo '<div class="alert alert-info">';
+    echo '<strong>Debug Info:</strong><br>';
+    echo 'Video Source: ' . ($videoxapi->video_source ?? 'not set') . '<br>';
+    echo 'Video URL: ' . ($videoxapi->video_url ?? 'not set') . '<br>';
+    echo 'Has Video: ' . ($hasvideo ? 'true' : 'false') . '<br>';
+    echo 'Video URL Generated: ' . ($videourl ?? 'not set') . '<br>';
+    
+    if ($videoxapi->video_source === 'file') {
+        $fs = get_file_storage();
+        $files = $fs->get_area_files($context->id, 'mod_videoxapi', 'video', 0, 'filename', false);
+        echo 'Files found: ' . count($files) . '<br>';
+        if (!empty($files)) {
+            foreach ($files as $file) {
+                echo 'File: ' . $file->get_filename() . '<br>';
+            }
+        }
+    }
+    echo '</div>';
+}
+
+// Show warning message if no video is configured.
+if (!$hasvideo) {
+    echo $OUTPUT->notification(get_string('novideo', 'videoxapi'), 'warning');
+}
+
 // Prepare template data.
 $templatedata = [
     'videoxapi' => $videoxapi,
     'cm' => $cm,
     'course' => $course,
     'playerid' => 'videoxapi-player-' . $videoxapi->id,
+    'hasvideo' => $hasvideo,
+    'videourl' => $videourl,
+    'videosource' => $videoxapi->video_source,
     'cancreatebookmarks' => has_capability('mod/videoxapi:createbookmarks', $context),
     'canviewallbookmarks' => has_capability('mod/videoxapi:viewallbookmarks', $context),
-    'canviewreports' => has_capability('mod/videoxapi:viewreports', $context)
+    'canviewreports' => has_capability('mod/videoxapi:viewreports', $context),
+    'caneditinstance' => has_capability('moodle/course:manageactivities', $context),
+    'config' => ['wwwroot' => $CFG->wwwroot]
 ];
 
-// Render the main view template.
-echo $OUTPUT->render_from_template('mod_videoxapi/view', $templatedata);
+// Only initialize player if video is available.
+if ($hasvideo) {
+    // Render the main view template.
+    echo $OUTPUT->render_from_template('mod_videoxapi/view', $templatedata);
+} else {
+    // Show basic template without video player.
+    echo $OUTPUT->render_from_template('mod_videoxapi/view_novideo', $templatedata);
+}
 
 echo $OUTPUT->footer();

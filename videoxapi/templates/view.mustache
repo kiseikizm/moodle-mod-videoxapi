@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template mod_videoxapi/view
+    @template videoxapi/view
 
     Main view template for videoxapi activity
 
@@ -24,9 +24,13 @@
     * cm - Course module
     * course - Course object
     * playerid - Video player element ID
+    * hasvideo - Whether video is configured
+    * videourl - Video URL (generated from source or file)
+    * videosource - Video source type ('url' or 'file')
     * cancreatebookmarks - User can create bookmarks
     * canviewallbookmarks - User can view all bookmarks
     * canviewreports - User can view reports
+    * caneditinstance - User can edit the instance
 
     Example context (json):
     {
@@ -46,8 +50,8 @@
 }}
 
 <div class="videoxapi-container">
+    {{#hasvideo}}
     <div class="videoxapi-player-wrapper">
-        {{#videoxapi.video_url}}
         <video
             id="{{playerid}}"
             class="video-js vjs-default-skin videoxapi-player"
@@ -55,26 +59,24 @@
             preload="auto"
             {{#videoxapi.video_width}}width="{{videoxapi.video_width}}"{{/videoxapi.video_width}}
             {{#videoxapi.video_height}}height="{{videoxapi.video_height}}"{{/videoxapi.video_height}}
+            {{#videoxapi.responsive_sizing}}data-responsive="true"{{/videoxapi.responsive_sizing}}
             data-setup="{}"
         >
-            <source src="{{videoxapi.video_url}}" type="video/mp4" />
+            <source src="{{videourl}}" type="video/mp4" />
             <p class="vjs-no-js">
-                To view this video please enable JavaScript, and consider upgrading to a web browser that
-                <a href="https://videojs.com/html5-video-support/" target="_blank">supports HTML5 video</a>.
+                {{#str}}errorloadingvideo, videoxapi{{/str}}
+                <br>
+                <a href="https://videojs.com/html5-video-support/" target="_blank">
+                    {{#str}}upgradedbrowser, core{{/str}}
+                </a>
             </p>
         </video>
-        {{/videoxapi.video_url}}
-        
-        {{^videoxapi.video_url}}
-        <div class="alert alert-warning">
-            {{#str}}novideo, mod_videoxapi{{/str}}
-        </div>
-        {{/videoxapi.video_url}}
     </div>
+    {{/hasvideo}}
 
     {{#videoxapi.enable_bookmarks}}
     <div class="videoxapi-bookmarks-section">
-        <h3>{{#str}}bookmarks, mod_videoxapi{{/str}}</h3>
+        <h3>{{#str}}bookmarks, videoxapi{{/str}}</h3>
         <div id="videoxapi-bookmarks-{{videoxapi.id}}" class="videoxapi-bookmarks-list">
             <!-- Bookmarks will be loaded here via JavaScript -->
         </div>
@@ -82,10 +84,11 @@
     {{/videoxapi.enable_bookmarks}}
 
     {{#canviewreports}}
-    <div class="videoxapi-reports-section">
-        <h3>{{#str}}reports, mod_videoxapi{{/str}}</h3>
-        <a href="report.php?id={{cm.id}}" class="btn btn-secondary">
-            {{#str}}viewreports, mod_videoxapi{{/str}}
+    <div class="videoxapi-reports-section mt-4">
+        <h3>{{#str}}reports, videoxapi{{/str}}</h3>
+        <a href="{{config.wwwroot}}/mod/videoxapi/report.php?id={{cm.id}}" class="btn btn-secondary">
+            <i class="fa fa-chart-bar" aria-hidden="true"></i>
+            {{#str}}viewreports, videoxapi{{/str}}
         </a>
     </div>
     {{/canviewreports}}

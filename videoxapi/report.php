@@ -24,23 +24,23 @@ $context = context_module::instance($cm->id);
 require_capability('mod/videoxapi:viewreports', $context);
 
 $PAGE->set_url('/mod/videoxapi/report.php', array('id' => $cm->id, 'action' => $action));
-$PAGE->set_title(format_string($videoxapi->name) . ' - ' . get_string('reports', 'mod_videoxapi'));
+$PAGE->set_title(format_string($videoxapi->name) . ' - ' . get_string('reports', 'videoxapi'));
 $PAGE->set_heading(format_string($course->fullname));
 $PAGE->set_context($context);
 
 // Add navigation.
-$PAGE->navbar->add(get_string('reports', 'mod_videoxapi'));
+$PAGE->navbar->add(get_string('reports', 'videoxapi'));
 
 echo $OUTPUT->header();
 
 // Report navigation tabs.
 $tabs = array();
 $tabs[] = new tabobject('overview', new moodle_url('/mod/videoxapi/report.php', array('id' => $id, 'action' => 'overview')), 
-    get_string('overview', 'mod_videoxapi'));
+    get_string('overview', 'videoxapi'));
 $tabs[] = new tabobject('engagement', new moodle_url('/mod/videoxapi/report.php', array('id' => $id, 'action' => 'engagement')), 
-    get_string('engagement', 'mod_videoxapi'));
+    get_string('engagement', 'videoxapi'));
 $tabs[] = new tabobject('bookmarks', new moodle_url('/mod/videoxapi/report.php', array('id' => $id, 'action' => 'bookmarks')), 
-    get_string('bookmarks', 'mod_videoxapi'));
+    get_string('bookmarks', 'videoxapi'));
 
 echo $OUTPUT->tabtree($tabs, $action);
 
@@ -81,33 +81,33 @@ function show_overview_report($videoxapi, $cm, $context) {
                SUM(CASE WHEN status = 2 THEN 1 ELSE 0 END) as failed_statements
         FROM {videoxapi_statements}");
 
-    echo $OUTPUT->heading(get_string('activityoverview', 'mod_videoxapi'), 3);
+    echo $OUTPUT->heading(get_string('activityoverview', 'videoxapi'), 3);
 
     // Overview statistics table.
     $table = new html_table();
-    $table->head = [get_string('metric', 'mod_videoxapi'), get_string('value', 'mod_videoxapi')];
+    $table->head = [get_string('metric', 'videoxapi'), get_string('value', 'videoxapi')];
     $table->data = [
-        [get_string('enrolledusers', 'mod_videoxapi'), $totalusers],
-        [get_string('totalbookmarks', 'mod_videoxapi'), $bookmarkstats->total_bookmarks ?: 0],
-        [get_string('userswithbookmarks', 'mod_videoxapi'), $bookmarkstats->users_with_bookmarks ?: 0],
-        [get_string('totalstatements', 'mod_videoxapi'), $statementstats->total_statements ?: 0],
-        [get_string('sentstatements', 'mod_videoxapi'), $statementstats->sent_statements ?: 0],
-        [get_string('pendingstatements', 'mod_videoxapi'), $statementstats->pending_statements ?: 0],
-        [get_string('failedstatements', 'mod_videoxapi'), $statementstats->failed_statements ?: 0]
+        [get_string('enrolledusers', 'videoxapi'), $totalusers],
+        [get_string('totalbookmarks', 'videoxapi'), $bookmarkstats->total_bookmarks ?: 0],
+        [get_string('userswithbookmarks', 'videoxapi'), $bookmarkstats->users_with_bookmarks ?: 0],
+        [get_string('totalstatements', 'videoxapi'), $statementstats->total_statements ?: 0],
+        [get_string('sentstatements', 'videoxapi'), $statementstats->sent_statements ?: 0],
+        [get_string('pendingstatements', 'videoxapi'), $statementstats->pending_statements ?: 0],
+        [get_string('failedstatements', 'videoxapi'), $statementstats->failed_statements ?: 0]
     ];
 
     echo html_writer::table($table);
 
     // Export options.
-    echo $OUTPUT->heading(get_string('exportoptions', 'mod_videoxapi'), 3);
+    echo $OUTPUT->heading(get_string('exportoptions', 'videoxapi'), 3);
     echo html_writer::start_div('export-options');
     
     $exporturl = new moodle_url('/mod/videoxapi/export.php', ['id' => $cm->id, 'format' => 'csv']);
-    echo html_writer::link($exporturl, get_string('exportcsv', 'mod_videoxapi'), ['class' => 'btn btn-secondary']);
+    echo html_writer::link($exporturl, get_string('exportcsv', 'videoxapi'), ['class' => 'btn btn-secondary']);
     
     $exporturl->param('format', 'pdf');
     echo ' ';
-    echo html_writer::link($exporturl, get_string('exportpdf', 'mod_videoxapi'), ['class' => 'btn btn-secondary']);
+    echo html_writer::link($exporturl, get_string('exportpdf', 'videoxapi'), ['class' => 'btn btn-secondary']);
     
     echo html_writer::end_div();
 }
@@ -118,7 +118,7 @@ function show_overview_report($videoxapi, $cm, $context) {
 function show_engagement_report($videoxapi, $cm, $context) {
     global $DB, $OUTPUT;
 
-    echo $OUTPUT->heading(get_string('engagementreport', 'mod_videoxapi'), 3);
+    echo $OUTPUT->heading(get_string('engagementreport', 'videoxapi'), 3);
 
     // Get user engagement data.
     $sql = "SELECT u.id, u.firstname, u.lastname, u.email,
@@ -137,11 +137,11 @@ function show_engagement_report($videoxapi, $cm, $context) {
 
     $table = new html_table();
     $table->head = [
-        get_string('student', 'mod_videoxapi'),
+        get_string('student', 'videoxapi'),
         get_string('email'),
-        get_string('bookmarkcount', 'mod_videoxapi'),
-        get_string('firstactivity', 'mod_videoxapi'),
-        get_string('lastactivity', 'mod_videoxapi')
+        get_string('bookmarkcount', 'videoxapi'),
+        get_string('firstactivity', 'videoxapi'),
+        get_string('lastactivity', 'videoxapi')
     ];
 
     foreach ($users as $user) {
@@ -160,7 +160,7 @@ function show_engagement_report($videoxapi, $cm, $context) {
 function show_bookmarks_report($videoxapi, $cm, $context) {
     global $DB, $OUTPUT;
 
-    echo $OUTPUT->heading(get_string('bookmarksreport', 'mod_videoxapi'), 3);
+    echo $OUTPUT->heading(get_string('bookmarksreport', 'videoxapi'), 3);
 
     // Get all bookmarks with user information.
     $sql = "SELECT b.*, u.firstname, u.lastname, u.email
@@ -172,17 +172,17 @@ function show_bookmarks_report($videoxapi, $cm, $context) {
     $bookmarks = $DB->get_records_sql($sql, [$videoxapi->id]);
 
     if (empty($bookmarks)) {
-        echo $OUTPUT->notification(get_string('nobookmarks', 'mod_videoxapi'), 'info');
+        echo $OUTPUT->notification(get_string('nobookmarks', 'videoxapi'), 'info');
         return;
     }
 
     $table = new html_table();
     $table->head = [
-        get_string('timestamp', 'mod_videoxapi'),
-        get_string('title', 'mod_videoxapi'),
-        get_string('description', 'mod_videoxapi'),
-        get_string('student', 'mod_videoxapi'),
-        get_string('created', 'mod_videoxapi')
+        get_string('timestamp', 'videoxapi'),
+        get_string('title', 'videoxapi'),
+        get_string('description', 'videoxapi'),
+        get_string('student', 'videoxapi'),
+        get_string('created', 'videoxapi')
     ];
 
     foreach ($bookmarks as $bookmark) {

@@ -29,7 +29,7 @@ class process_xapi_queue extends \core\task\scheduled_task {
      * @return string
      */
     public function get_name() {
-        return get_string('processxapiqueue', 'mod_videoxapi');
+        return get_string('processxapiqueue', 'videoxapi');
     }
 
     /**

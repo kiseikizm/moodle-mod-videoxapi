@@ -161,7 +161,7 @@ class provider implements
             ];
 
             writer::with_context($context)->export_data(
-                [get_string('bookmarks', 'mod_videoxapi')],
+                [get_string('bookmarks', 'videoxapi')],
                 (object) $bookmarkdata
             );
         }
